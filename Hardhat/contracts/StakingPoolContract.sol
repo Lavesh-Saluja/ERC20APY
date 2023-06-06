@@ -46,18 +46,19 @@ contract StakingPoolContract is ReentrancyGuard {
         token = IERC20(tokenAddress);
         MINIMUM_STAKING_TIME = minmum_staking_time_in_days * 24 * 60 * 60;
         FIXED_APY = _FIXED_APY;
-
         owner = msg.sender;
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner);
+        require(msg.sender == owner,"Not the owner");
         _;
     }
 
-    function depositStake(
-        uint256 amount
-    ) external nonReentrant returns (uint256) {
+    function depositStake(uint256 amount)
+        external
+        nonReentrant
+        returns (uint256)
+    {
         require(amount > 0, "Invalid stake amount");
 
         require(
@@ -76,10 +77,10 @@ contract StakingPoolContract is ReentrancyGuard {
         return stake_id;
     }
 
-    function withdrawStake(
-        uint256 amount,
-        uint256 stake_id
-    ) external nonReentrant {
+    function withdrawStake(uint256 amount, uint256 stake_id)
+        external
+        nonReentrant
+    {
         require(stakes_count[msg.sender] > 0, "No stake found");
         require(
             amount <= stakes_pool[msg.sender][stake_id].amount,
@@ -130,10 +131,11 @@ contract StakingPoolContract is ReentrancyGuard {
         emit RewardsWithdrawn(msg.sender, amount);
     }
 
-    function calculateRewardPerStake(
-        address staker,
-        uint256 stake_id
-    ) public view returns (uint256) {
+    function calculateRewardPerStake(address staker, uint256 stake_id)
+        public
+        view
+        returns (uint256)
+    {
         uint256 amount = stakes_pool[staker][stake_id].amount;
         uint256 timestamp = stakes_pool[staker][stake_id].timestamp;
         uint256 timeElapsed = block.timestamp - timestamp;
@@ -141,23 +143,27 @@ contract StakingPoolContract is ReentrancyGuard {
         return (amount * FIXED_APY * timeElapsed) / (100 * SECONDS_IN_YEAR);
     }
 
-    function getStakeAmount(
-        address staker,
-        uint256 stake_id
-    ) external view returns (uint256) {
+    function getStakeAmount(address staker, uint256 stake_id)
+        external
+        view
+        returns (uint256)
+    {
         return stakes_pool[staker][stake_id].amount;
     }
 
-    function getStakeTimestamp(
-        address staker,
-        uint256 stake_id
-    ) external view returns (uint256) {
+    function getStakeTimestamp(address staker, uint256 stake_id)
+        external
+        view
+        returns (uint256)
+    {
         return stakes_pool[staker][stake_id].timestamp;
     }
 
-    function getRewardsWithdrawable(
-        address staker
-    ) external view returns (uint256) {
+    function getRewardsWithdrawable(address staker)
+        external
+        view
+        returns (uint256)
+    {
         return rewards_ewarned[staker];
     }
 
@@ -169,9 +175,11 @@ contract StakingPoolContract is ReentrancyGuard {
         instant_withdrawl_allowed = !instant_withdrawl_allowed;
     }
 
-    function getTotalStakesCount(
-        address staker
-    ) external view returns (uint256) {
+    function getTotalStakesCount(address staker)
+        external
+        view
+        returns (uint256)
+    {
         return stakes_count[staker];
     }
 
