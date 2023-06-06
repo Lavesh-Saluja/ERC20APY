@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
+import "hardhat/console.sol";
 contract StakingPoolContract is ReentrancyGuard {
     uint256 private FIXED_APY;
     uint256 private constant SECONDS_IN_YEAR = 31536000; // Number of seconds in a year (365 days)
