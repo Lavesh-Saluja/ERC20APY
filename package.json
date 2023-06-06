@@ -4,6 +4,7 @@
     "hardhat": "^2.14.1"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.0"
+    "@openzeppelin/contracts": "^4.9.0",
+    "create-react-app": "^5.0.1"
   }
 }
