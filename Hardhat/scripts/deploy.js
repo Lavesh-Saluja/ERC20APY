@@ -19,7 +19,7 @@ async function main() {
   const contract=await APYContract.deploy(tokenAddress,fixedAPY,minDays);
   await contract.deployed();
 
-  console.log("Contract Address", contract.address);//0xEA62d0e0631a98F115bB6d71DE3145B9443F3413
+  console.log("Contract Address", contract.address);//0x3F56D42dEf55910660fd5614Af4509124e041a53
   
    console.log("Sleeping.....");
   // Wait for etherscan to notice that the contract has been deployed
@@ -27,7 +27,7 @@ async function main() {
 
   // Verify the contract after deploying
   await hre.run("verify:verify", {
-    address: "0xEA62d0e0631a98F115bB6d71DE3145B9443F3413",
+    address: contract.address,
       constructorArguments: [tokenAddress,fixedAPY,minDays],
     contract: "contracts/StakingPoolContract.sol:StakingPoolContract"
   });

@@ -66,7 +66,7 @@ contract StakingPoolContract is ReentrancyGuard {
             "Stake transfer failed"
         );
 
-        uint256 stake_id = stakes_count[msg.sender] + 1;
+        uint256 stake_id = ++stakes_count[msg.sender];
 
         stakes_pool[msg.sender][stake_id] = Stake(
             stake_id,
