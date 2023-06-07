@@ -4,7 +4,8 @@ import StakeDeposit from './components/StakeDeposit';
 import StakeWithdraw from './components/StakeWithdraw';
 
 import {useState,useEffect} from 'react';
-// import abi from "./contracts/";
+// import abi from "./contracts/APYToken.sol/APYToken.json";
+import abi from "./contracts/StakingPoolContract.json";
 import {ethers} from "ethers";
 
 function App() {
@@ -17,7 +18,7 @@ function App() {
   const [account, setAccount]=useState("None");
   useEffect(() => {
     const connectWallet = async () => {
-    const contractAddress = "0x835189fa0e82a06549c030341949d2cec40b04fb"; //contarct address
+    const contractAddress = "00xEA62d0e0631a98F115bB6d71DE3145B9443F3413"; //contarct address
     const contractABI = abi.abi;// contract abi 
     try{
       const {ethereum}=window;

@@ -2,7 +2,9 @@ import React from 'react'
 
 const StakeDeposit = ({state}) => {
 
-    const depositStake = async(event)=>{};
+    const depositStake = async(event)=>{
+        
+    };
     return(
         <>
         <form onSubmit={depositStake}>
