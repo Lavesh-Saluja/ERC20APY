@@ -7,14 +7,14 @@ const BSC_KEY = process.env.BSC_KEY;
 
 module.exports = {
   solidity: "0.8.4",
-  networks: {
-    bscTestnet: {
-      url: QUICKNODE_HTTP_URL,
-      accounts: [PRIVATE_KEY],
-    },
-  },
+  // networks: {
+  //   bscTestnet: {
+  //     url: QUICKNODE_HTTP_URL,
+  //     accounts: [PRIVATE_KEY],
+  //   },
+  // },
 
-  etherscan: {
-    apiKey: BSC_KEY,
-  },
+  // etherscan: {
+  //   apiKey: BSC_KEY,
+  // },
 };

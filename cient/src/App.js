@@ -52,9 +52,9 @@ function App() {
     <div className="App">
       {/* <p>Connected Account -{account}</p> */}
       <p>Connected Account</p>
-      <StakeDeposit state={state}></StakeDeposit>
+      {/* <StakeDeposit state={state}></StakeDeposit>
       <StakeWithdraw state={state}></StakeWithdraw>
-      <RewardWithdraw state={state}></RewardWithdraw>
+      <RewardWithdraw state={state}></RewardWithdraw> */}
     </div>
   );
 }
