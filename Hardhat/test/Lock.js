@@ -5,10 +5,39 @@ const {
 const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { expect } = require("chai");
 
-describe("Lock", function () {
-  // We define a fixture to reuse the same setup in every test.
-  // We use loadFixture to run this setup once, snapshot that state,
-  // and reset Hardhat Network to that snapshot in every test.
+describe("StakingPool Contract", function () {
+  let StakingPoolContract;
+  let hardhatStakingPoolContract;
+  let owner;
+  let addr1;
+  let addr2;
+  let addrs;
+
+
+  beforeEach(async function(){
+    StakingPoolContract = await ether.getContractFactory(StakingPoolContract);
+    [owner,addr1,addr2,...addrs] = await ethers.getSigners();
+    hardhatStakingPoolContract = await StakingPoolContract.deploy();
+  });
+
+  describe ("Deployment",function(){
+    it("Should be the write owner", async function (){
+      expect (await hardhatStakingPoolContract.owner()).to.equal(owner.address)
+    });
+  });
+
+  describe ("Transactions",function(){
+    it("Should transfer tokens between accounts", async function(){
+      await hardhatStakingPoolContract.transfer(addr1.address,2);
+      const addr1Balance = await hardhatStakingPoolContract.getBalance(addr1.address);
+      expect(addr1Balance).to.equal(2);
+    });
+
+    it("Should fail if sender does not have enough tokens",async function(){
+      const intialOwnerBalance = await hardhatStakingPoolContract.getBalance(owner.address);
+      await expect (hardhatStakingPoolContract.connect(addr1).transfer(owner.address, 1)).to.be.revertedWith("Not enough tokens");
+    })
+  })
   async function deployOneYearLockFixture() {
     const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
     const ONE_GWEI = 1_000_000_000;
