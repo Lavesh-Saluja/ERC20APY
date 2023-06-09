@@ -1,6 +1,6 @@
 import React from 'react'
 
-const StakeDeposit = ({state}) => {
+const StakeDeposit = () => {
 
     const depositStake = async(event)=>{
         
@@ -10,7 +10,7 @@ const StakeDeposit = ({state}) => {
         <form onSubmit={depositStake}>
             <label>Amount</label>
             <input type="number" id="amount" placeholder="Enter the amount"></input>
-            <button type="submit" disabled={state}>Pay</button>
+            <button type="submit" >Pay</button>
         </form>
         <div>{}</div>
         </>

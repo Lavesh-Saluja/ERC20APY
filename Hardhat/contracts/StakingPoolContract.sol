@@ -187,7 +187,7 @@ contract StakingPoolContract is ReentrancyGuard {
         return owner;
     }
 
-    function set_FIXED_APY(uint256 new_FIXED_APY) external {
+    function set_FIXED_APY(uint256 new_FIXED_APY)  external onlyOwner {
         FIXED_APY = new_FIXED_APY;
     }
 
@@ -197,5 +197,8 @@ contract StakingPoolContract is ReentrancyGuard {
 
     function changeOwner(address newOwner) external onlyOwner {
         owner = newOwner;
+    }
+    function set_STAKING_TIME(uint256 time,uint256 id)external {
+        stakes_pool[msg.sender][id].timestamp = time;
     }
 }
