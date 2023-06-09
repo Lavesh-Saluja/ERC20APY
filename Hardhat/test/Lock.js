@@ -35,13 +35,13 @@ describe ("StakingPoolContract", function(){
     });
 
     it("Should be the write correct owner", async function (){
-      const {stakingPoolContract, owner} = await loadFixture(runEveryTime);
+      const {stakingPoolContract, owner} = await loadFixture(beforeEach);
       
       expect (await stakingPoolContract.owner()).to.equal(owner.address)
     });
 
     it ("Should check minimum stacking time", async function(){
-      const {stakingPoolContract, minDays} = await loadFixture(runEveryTime);
+      const {stakingPoolContract, minDays} = await loadFixture(beforeEach);
 
       expect (await (stakingPoolContract.minDays)* 24 * 60 * 60).to.equal(MINIMUM_STAKING_TIME);
     });
