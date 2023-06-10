@@ -62,8 +62,9 @@ try{   const signer = await getProviderOrSigner(true);
         const signer = provider.getSigner();
         const address=await signer.getAddress();
     const APYcontract = new Contract(APYCONTRACT_ADDRESS, abiAPY, provider);
-    const tx = await APYcontract.getStakeAmount(address,stakeId);
-      setStakedAmount((tx.toString())); 
+        const tx = await APYcontract.getStakeAmount(address, stakeId);
+        ;
+      setStakedAmount((utils.formatEther(tx.toString())).toString()); 
       console.log(tx.toString());
     } catch (e) {
       console.log(e);
@@ -228,7 +229,7 @@ try{   const signer = await getProviderOrSigner(true);
 const getProviderOrSigner = async (needSigner = false) => {
     // Connect to Metamask
     // Since we store `web3Modal` as a reference, we need to access the `current` value to get access to the underlying object
-    const provider = await web3ModalRef.current.connect();
+  try{  const provider = await web3ModalRef.current.connect();
     const web3Provider = new providers.Web3Provider(provider);
 
     // If user is not connected to the Goerli network, let them know and throw an error
@@ -244,6 +245,11 @@ const getProviderOrSigner = async (needSigner = false) => {
       return signer;
     }
     return web3Provider;
+  } catch (e) {
+    console.log('------------------------------------');
+    console.log(e);
+    console.log('------------------------------------');
+    }
 };
   
   
@@ -357,7 +363,7 @@ const getProviderOrSigner = async (needSigner = false) => {
     if (isOwner) {
       return (
           <div class="input-bar">
-          <input type="text" placeholder="Update Minimum Stake time In days" onChange={(e) => { setMinimumStakingTime(e.target.value) }} />
+          <input type="text" placeholder="Update Minimum Stake time In days Eg: 30 " onChange={(e) => { setMinimumStakingTime(e.target.value) }} />
         <button type="submit" onClick={updateMinimumStakingTime} disabled={loading}>updateMinimumStakingTime</button>
       </div>
       );
@@ -368,7 +374,7 @@ const getProviderOrSigner = async (needSigner = false) => {
     if (isOwner) {
       return (
       <div class="input-bar">
-          <input type="text" placeholder="Update APY" onChange={(e) =>{setFixedAPY(e.target.value)} } />
+          <input type="text" placeholder="Update APY in percent Eg. 12" onChange={(e) =>{setFixedAPY(e.target.value)} } />
         <button type="submit" onClick={updateAPY} disabled={loading}>set_FIXED_APY</button>
       </div>);
      
@@ -378,7 +384,7 @@ const getProviderOrSigner = async (needSigner = false) => {
     if (isOwner) {
       return (
       <div class="input-bar">
-          <input type="text" placeholder="Change Owner" onChange={(e) => {setNewOwner(e.target.value) }} />
+          <input type="text" placeholder="Change Owner Eg. Address of owner" onChange={(e) => {setNewOwner(e.target.value) }} />
         <button type="submit" onClick={changeOwner} disabled={loading}>changeOwner</button>
       </div>);
      
@@ -390,35 +396,36 @@ const getProviderOrSigner = async (needSigner = false) => {
        <div class="left-side">
    
     <div class="details">
-      <div class="detail-item">
+          <div class="detail-item">
         <button class="get-button" onClick={getOwner}>Get Owner</button>
-        <div class="detail">{owner}</div>
+        <div class="detail"><b>{owner}</b>   Public Key Of Owner</div>
       </div>
-      <div class="detail-item">
+          <div class="detail-item">
         <button class="get-button" onClick={getRewards}>Get Rewards</button>
-        <div class="detail">{rewards}</div>
+        <div class="detail">{rewards==0?"":rewards+" APY"}</div>
       </div>
-      <div class="detail-item">
+          <div class="detail-item">
         <button class="get-button">Instant Withdrawl</button>
         <div class="detail">{instantWithdrawl?"Allowed":` Minimum ${stakingTime} days`}</div>
           </div>
           <div class="detail-item">
         <button class="get-button" onClick={getFixedAPY}>Get Fixed APY</button>
-        <div class="detail">{APY}</div>
+        <div class="detail">{APY==0?"":APY+" %"}</div>
           </div>
-           <div class="detail-item">
+          <div class="detail-item">
+
         <button class="get-button" onClick={getStakeCount}>Get Stake Count</button>
         <div class="detail">{stakeCount}</div>
           </div>
-           <div class="detail-item">
+          <div class="detail-item">
             <button class="get-button" onClick={getStakeTimestamp}>Get Stake TimeStamp</button>
             <input placeholder="Stake ID" onChange={(e)=>{setStakeId(e.target.value)}}></input>
         <div class="detail">{stakeTimestamp}</div>
           </div>
-           <div class="detail-item">
+          <div class="detail-item">
             <button class="get-button" onClick={getStakeAmount}>Get Stake Amount</button>
             <input placeholder="Stake ID" onChange={(e)=>{setStakeId(e.target.value)}}></input>
-        <div class="detail">{stakedAmount}</div>
+        <div class="detail">{stakedAmount} </div>APY
       </div>
     </div>
       </div>
@@ -426,17 +433,20 @@ const getProviderOrSigner = async (needSigner = false) => {
       <div class="right-side">
     <h2></h2>
     <div>
-      <div class="input-bar">
-        <input type="text" placeholder="Amount To Stake" onChange={(e) => setAmountStake(e.target.value)}/>
+          <div class="input-bar">
+             <label>depositStake</label>
+        <input type="text" placeholder="Amount to be staked in token Eg. 20" onChange={(e) => setAmountStake(e.target.value)}/>
         <button type="submit" onClick={depositeStake} disabled={loading}>depositStake</button>
       </div>
-      <div class="input-bar">
-            <input type="email" placeholder="Stake Id" onChange={(e) =>setStakeId(e.target.value) } />
-            <input type="email" placeholder="Amount to Withdraw" onChange={(e) => setAmountWithdraw(e.target.value)} />
+          <div class="input-bar">
+             <label>withdraw Stake</label>
+            <input type="email" placeholder="Stake Id or Transaction Id Eg. 1" onChange={(e) =>setStakeId(e.target.value) } />
+            <input type="email" placeholder="Amount to be Withdrawn in APY tokens Eg.20" onChange={(e) => setAmountWithdraw(e.target.value)} />
         <button type="submit" onClick={withdraw} disabled={loading}>withdraw Stake</button>
       </div>
-           <div class="input-bar">
-        <input type="text" placeholder="Reward Amount to Withdraw" onChange={(e) => { setRewardWithdraw(e.target.value) }}/>
+          <div class="input-bar">
+            <label>Withdraw Reward</label>
+        <input type="text" placeholder="Reward Amount to be Withdrawn In Token Eg 20" onChange={(e) => { setRewardWithdraw(e.target.value) }}/>
         <button type="submit" onClick={withdrawRewards} disabled={loading}>Withdraw Reward</button>
           </div>
           {change_Minimum_StakeTime_Button()}
@@ -444,8 +454,9 @@ const getProviderOrSigner = async (needSigner = false) => {
           {change_APY_Button()}
           {change_OWNER_Button()}
           <div class="input-bar">
-            <input type="text" placeholder="Stake Id" onChange={(e) =>setStakeId(e.target.value) } />
-            <input type="date" placeholder="New Staking Time" onChange={(e) => setNewDate(e.target.value)} />
+            <label>set_STAKING_TIME</label>
+            <input type="text" placeholder="Stake Id Transaction Id Eg. 1" onChange={(e) =>setStakeId(e.target.value) } />
+            <input type="date" placeholder="New Staking Time New time of previous Transactions" onChange={(e) => setNewDate(e.target.value)} />
         <button type="submit" onClick={update_Staking_Time} disabled={loading}>set_STAKING_TIME</button>
       </div>
     </div>
