@@ -167,7 +167,8 @@ contract StakingPoolContract is ReentrancyGuard {
         return rewards_ewarned[staker];
     }
 
-    function updateMinimumStakingTime(uint256 _days) external onlyOwner {
+    function updateMinimumStakingTime(uint256 _days) external  {
+        require(msg.sender == owner,"Not the owner");
         MINIMUM_STAKING_TIME = _days * 24 * 60 * 60;
     }
 

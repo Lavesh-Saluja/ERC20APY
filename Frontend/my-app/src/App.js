@@ -23,7 +23,8 @@ function App() {
     const [stakeTimestamp, setStakeTimeStamp] = useState("");
   const [stakedAmount, setStakedAmount] = useState("");
   const [newOwner, setNewOwner] = useState("");
-  const [newDate,setNewDate] = useState("");
+  const [newDate, setNewDate] = useState("");
+  const [transactionHash,setTransactionHash]=useState("");
   const web3ModalRef = useRef();
 
 
@@ -35,10 +36,13 @@ function App() {
       console.log(newDate);
       const time = (new Date(newDate)).getTime();
       console.log(time,"id:",stakeId);
-      const tx = await APYcontract.set_STAKING_TIME(time/1000, stakeId);
+      const tx = await APYcontract.set_STAKING_TIME(time / 1000, stakeId);
+      setTransactionHash(tx.hash)
+      console.log(transactionHash)
       setLoading(true);
       await tx.wait();
       setLoading(false);
+      clearInput();
     } catch (e) {
       console.log(e)
     }
@@ -48,10 +52,12 @@ function App() {
 try{   const signer = await getProviderOrSigner(true);
   const APYcontract = new Contract(APYCONTRACT_ADDRESS, abiAPY, signer);
   const tx = await APYcontract.changeOwner(newOwner);
+   setTransactionHash(("https://testnet.bscscan.com/tx/"+tx.hash))
   setLoading(true);
   await tx.wait();
   setLoading(false);
   setOwner(newOwner);
+  clearInput();
 } catch (e) {
   console.log(e.message);
 }
@@ -124,12 +130,14 @@ try{   const signer = await getProviderOrSigner(true);
         const APYcontract = new Contract(APYCONTRACT_ADDRESS, abiAPY, signer);
         console.log(Number(APY))
         const tx = await APYcontract.set_FIXED_APY(Number(fixedAPY));
+         setTransactionHash(tx.hash)
         await tx.wait();
     setLoading(true);
     await tx.wait();
         setLoading(false);
         setAPY(fixedAPY);
         window.alert("changed APY time Successfully")
+        clearInput();
       }
       else {
         window.alert("Enter valid number")
@@ -146,11 +154,13 @@ try{   const signer = await getProviderOrSigner(true);
        { 
       const signer = await getProviderOrSigner(true);
     const APYcontract = new Contract(APYCONTRACT_ADDRESS, abiAPY, signer);
-    const tx = await APYcontract.updateMinimumStakingTime(minimumStakingTime);
+        const tx = await APYcontract.updateMinimumStakingTime(minimumStakingTime);
+         setTransactionHash(tx.hash)
     setLoading(true);
     await tx.wait();
     setLoading(false);
         window.alert("changed Staking time Successfully")
+        clearInput();
       }
       else {
         window.alert("Enter valid number")
@@ -165,9 +175,11 @@ try{   const signer = await getProviderOrSigner(true);
     const APYcontract = new Contract(APYCONTRACT_ADDRESS, abiAPY, signer);
     const amt=utils.parseEther(rewardWithdraw);
     const tx = await APYcontract.withdrawReward(amt);
+     setTransactionHash(tx.hash)
     setLoading(true);
     await tx.wait();
     setLoading(false);
+    clearInput();
   }
   const getRewards = async () => {
     try {
@@ -270,10 +282,12 @@ const getProviderOrSigner = async (needSigner = false) => {
         );
       setLoading(true);
       await tx.wait();
-        tx=await APYcontract.depositStake(amountWei);
+        tx = await APYcontract.depositStake(amountWei);
+             setTransactionHash(tx.hash)
         await tx.wait();
         setLoading(false);
-      window.alert("Transaction successful");
+        window.alert("Transaction successful");
+        clearInput();
         
       } catch (e) {
         console.log(e);
@@ -293,10 +307,14 @@ const getProviderOrSigner = async (needSigner = false) => {
         const amountWei = utils.parseEther(amountWithdraw.toString());
         console.log(amountWei,"id:",stakeId);
         const tx = await APYcontract.withdrawStake(amountWei, stakeId);
+             setTransactionHash(tx.hash)
+
         setLoading(true);
         await tx.wait();
         setLoading(false);
+        clearInput();
         window.alert("Transaction successful");
+        
       } catch (e) {
         console.log(e);
       }
@@ -309,14 +327,24 @@ const getProviderOrSigner = async (needSigner = false) => {
   async function toggleInstantWithdrawl() {
     try{const signer = await getProviderOrSigner(true);
     const APYcontract = new Contract(APYCONTRACT_ADDRESS, abiAPY, signer);
-    const tx = await APYcontract.toggleWithdrawlInstantOrMonthly();
+      const tx = await APYcontract.toggleWithdrawlInstantOrMonthly();
+           setTransactionHash(tx.hash)
+
     await tx.wait();
       window.alert("Instant Withdrawl changed");
+      clearInput();
     } catch (e) {
       console.error(e);
     }
   }
   
+  const clearInput = () => {
+    var tags = document.getElementsByClassName('clear');
+    for(var i=0; i< tags.length; i++){
+    tags[i].value = "";
+}
+
+  }
   useEffect(() => {
     if (!walletConnected) {
             web3ModalRef.current = new Web3Modal({
@@ -333,20 +361,6 @@ const getProviderOrSigner = async (needSigner = false) => {
     }
     
   },[walletConnected]);
-
-
-  const renderButton = () => {
-    if (!walletConnected) {
-      return (
-        <>
-         <button onClick={connectWallet}>Connect Wallet</button>
-        </>
-       
-    )
-    }
-  }
-  
- 
   
   const toogleInstantWithdrawl_Button = () => {
     if (isOwner) {
@@ -363,7 +377,7 @@ const getProviderOrSigner = async (needSigner = false) => {
     if (isOwner) {
       return (
           <div class="input-bar">
-          <input type="text" placeholder="Update Minimum Stake time In days Eg: 30 " onChange={(e) => { setMinimumStakingTime(e.target.value) }} />
+          <input type="text" placeholder="Update Minimum Stake time In days Eg: 30 " onChange={(e) => { setMinimumStakingTime(e.target.value) }} className="clear"/>
         <button type="submit" onClick={updateMinimumStakingTime} disabled={loading}>updateMinimumStakingTime</button>
       </div>
       );
@@ -374,7 +388,7 @@ const getProviderOrSigner = async (needSigner = false) => {
     if (isOwner) {
       return (
       <div class="input-bar">
-          <input type="text" placeholder="Update APY in percent Eg. 12" onChange={(e) =>{setFixedAPY(e.target.value)} } />
+          <input type="text" placeholder="Update APY in percent Eg. 12" onChange={(e) =>{setFixedAPY(e.target.value)} } className="clear"/>
         <button type="submit" onClick={updateAPY} disabled={loading}>set_FIXED_APY</button>
       </div>);
      
@@ -384,7 +398,7 @@ const getProviderOrSigner = async (needSigner = false) => {
     if (isOwner) {
       return (
       <div class="input-bar">
-          <input type="text" placeholder="Change Owner Eg. Address of owner" onChange={(e) => {setNewOwner(e.target.value) }} />
+          <input type="text" placeholder="Change Owner Eg. Address of owner" onChange={(e) => {setNewOwner(e.target.value) }} className="clear"/>
         <button type="submit" onClick={changeOwner} disabled={loading}>changeOwner</button>
       </div>);
      
@@ -393,8 +407,9 @@ const getProviderOrSigner = async (needSigner = false) => {
 
   return (
     <div className="container">
+     
        <div class="left-side">
-   
+    
     <div class="details">
           <div class="detail-item">
         <button class="get-button" onClick={getOwner}>Get Owner</button>
@@ -402,7 +417,7 @@ const getProviderOrSigner = async (needSigner = false) => {
       </div>
           <div class="detail-item">
         <button class="get-button" onClick={getRewards}>Get Rewards</button>
-        <div class="detail">{rewards==0?"":rewards+" APY"}</div>
+        <div class="detail">{rewards==0?"":rewards+" Token"}</div>
       </div>
           <div class="detail-item">
         <button class="get-button">Instant Withdrawl</button>
@@ -425,29 +440,34 @@ const getProviderOrSigner = async (needSigner = false) => {
           <div class="detail-item">
             <button class="get-button" onClick={getStakeAmount}>Get Stake Amount</button>
             <input placeholder="Stake ID" onChange={(e)=>{setStakeId(e.target.value)}}></input>
-        <div class="detail">{stakedAmount} </div>APY
+        <div class="detail">{stakedAmount} </div>Token
       </div>
-    </div>
+        </div>
+         <div className="details link">
+          <h1>Verify your transaction on</h1>
+          <a href={`https://testnet.bscscan.com/tx/${transactionHash}`}><h5>{ transactionHash===""?"":" BSC Scan here"}</h5></a>
+      </div>
       </div>
       
       <div class="right-side">
     <h2></h2>
     <div>
           <div class="input-bar">
-             <label>depositStake</label>
-        <input type="text" placeholder="Amount to be staked in token Eg. 20" onChange={(e) => setAmountStake(e.target.value)}/>
+               <label>depositStake</label>
+              <input type="text" placeholder="Amount to be staked in token Eg. 20" onChange={(e) => {  setAmountStake(e.target.value)} } className="clear"/>
         <button type="submit" onClick={depositeStake} disabled={loading}>depositStake</button>
+            
       </div>
           <div class="input-bar">
              <label>withdraw Stake</label>
-            <input type="email" placeholder="Stake Id or Transaction Id Eg. 1" onChange={(e) =>setStakeId(e.target.value) } />
-            <input type="email" placeholder="Amount to be Withdrawn in APY tokens Eg.20" onChange={(e) => setAmountWithdraw(e.target.value)} />
+            <input type="email" placeholder="Stake Id or Transaction Id Eg. 1" onChange={(e) =>setStakeId(e.target.value) } className="clear"/>
+            <input type="email" placeholder="Amount to be Withdrawn in APY tokens Eg.20" onChange={(e) => setAmountWithdraw(e.target.value)} className="clear"/>
         <button type="submit" onClick={withdraw} disabled={loading}>withdraw Stake</button>
       </div>
           <div class="input-bar">
             <label>Withdraw Reward</label>
-        <input type="text" placeholder="Reward Amount to be Withdrawn In Token Eg 20" onChange={(e) => { setRewardWithdraw(e.target.value) }}/>
-        <button type="submit" onClick={withdrawRewards} disabled={loading}>Withdraw Reward</button>
+        <input type="text" placeholder="Reward Amount to be Withdrawn In Token Eg 20" onChange={(e) => { setRewardWithdraw(e.target.value) }} className="clear"/>
+            <button type="submit" onClick={() => { withdrawRewards(); }} disabled={loading}>Withdraw Reward</button>
           </div>
           {change_Minimum_StakeTime_Button()}
           {toogleInstantWithdrawl_Button()}
@@ -455,16 +475,17 @@ const getProviderOrSigner = async (needSigner = false) => {
           {change_OWNER_Button()}
           <div class="input-bar">
             <label>set_STAKING_TIME</label>
-            <input type="text" placeholder="Stake Id Transaction Id Eg. 1" onChange={(e) =>setStakeId(e.target.value) } />
-            <input type="date" placeholder="New Staking Time New time of previous Transactions" onChange={(e) => setNewDate(e.target.value)} />
+            <input type="text" placeholder="Stake Id Transaction Id Eg. 1" onChange={(e) =>setStakeId(e.target.value) } className="clear"/>
+            <input type="date" placeholder="New Staking Time New time of previous Transactions" onChange={(e) => setNewDate(e.target.value)} className="clear"/>
         <button type="submit" onClick={update_Staking_Time} disabled={loading}>set_STAKING_TIME</button>
       </div>
-    </div>
+        </div>
+         
   </div>
 
 
 
-    
+  
      
     </div>
   );
