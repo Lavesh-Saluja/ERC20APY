@@ -78,7 +78,7 @@ contract StakingPoolContract is ReentrancyGuard {
 
     function withdrawStake(uint256 amount, uint256 stake_id)
         external
-        nonReentrant
+        
     {
         require(stakes_count[msg.sender] > 0, "No stake found");
         require(
@@ -94,16 +94,13 @@ contract StakingPoolContract is ReentrancyGuard {
         uint256 reward = calculateRewardPerStake(msg.sender, stake_id);
 
         rewards_ewarned[msg.sender] += reward;
-
-        uint256 newAmount = stakes_pool[msg.sender][stake_id].amount - amount;
+        require(token.transfer(msg.sender, amount), "Stake withdrawal failed");
+  uint256 newAmount = stakes_pool[msg.sender][stake_id].amount - amount;
         stakes_pool[msg.sender][stake_id] = Stake(
             stake_id,
             newAmount,
             block.timestamp
         );
-
-        require(token.transfer(msg.sender, amount), "Stake withdrawal failed");
-
         emit StakeWithdrawn(
             msg.sender,
             stake_id,
